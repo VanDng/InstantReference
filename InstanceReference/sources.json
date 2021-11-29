@@ -1,0 +1,19 @@
+{
+  "sources": [
+    {
+      "name": "Cambridge",
+      "base_address": "https://dictionary.cambridge.org/",
+      "uri": "/vi/dictionary/english/"
+    },
+
+    //{
+    //  "name": "Vocabulary",
+    //  "url": "https://www.vocabulary.com/dictionary/"
+    //},
+
+    //{
+    //  "name": "OxfordLearner",
+    //  "url": "https://www.oxfordlearnersdictionaries.com/definition/english/"
+    //}
+  ]
+}
