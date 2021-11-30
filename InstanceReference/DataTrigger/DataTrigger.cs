@@ -25,6 +25,8 @@ namespace InstanceReference
         {
             if (IsNeedToTrigger(data))
             {
+                data = data.ToLower();
+
                 OnDataArrived(data);
                 _previousText = data;
             }

@@ -48,7 +48,13 @@ namespace InstanceReference
 
             while (_stopped == false)
             {
-                var text = Clipboard.GetText(TextDataFormat.Text);
+                string text = string.Empty;
+                try
+                {
+                    text = Clipboard.GetText(TextDataFormat.Text);
+                }
+                catch
+                { }
 
                 if (text.Length > 0)
                 {
