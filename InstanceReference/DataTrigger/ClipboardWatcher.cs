@@ -22,7 +22,7 @@ namespace InstanceReference
 
     partial class ClipboardWatcher
     {
-        private TimeSpan _pollingInterval = TimeSpan.FromSeconds(1);
+        private TimeSpan _pollingInterval = TimeSpan.FromSeconds(0.5);
 
         private Thread _threadWatcher;
         private bool _stopped;
@@ -33,6 +33,7 @@ namespace InstanceReference
 
             _threadWatcher = new Thread(clipboardWatching);
             _threadWatcher.SetApartmentState(ApartmentState.STA);
+            _threadWatcher.IsBackground = true;
             _threadWatcher.Start();
         }
 
@@ -49,8 +50,7 @@ namespace InstanceReference
             {
                 var text = Clipboard.GetText(TextDataFormat.Text);
 
-                if (text.Length > 0 &&
-                    text.Contains('.') == false)
+                if (text.Length > 0)
                 {
                     if (text.Length == lastText.Length && // Avoid large text comparison
                         lastText == text)

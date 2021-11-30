@@ -3,17 +3,29 @@
     {
       "name": "Cambridge",
       "base_address": "https://dictionary.cambridge.org/",
-      "uri": "/vi/dictionary/english/"
+      "uri": "vi/dictionary/english/",
+      "html_filter": {
+        "selectors": [
+          ""
+        ]
+      }
     },
 
-    //{
-    //  "name": "Vocabulary",
-    //  "url": "https://www.vocabulary.com/dictionary/"
-    //},
-
-    //{
-    //  "name": "OxfordLearner",
-    //  "url": "https://www.oxfordlearnersdictionaries.com/definition/english/"
-    //}
+    {
+      "name": "OxfordLearner",
+      "base_address": "https://www.oxfordlearnersdictionaries.com/",
+      "uri": "definition/english/",
+      "html_filter": {
+        "selectors": [
+          "//*[contains(@id,'ox-header')]",
+          "//*[contains(@id,'searchbar')]",
+          "//*[contains(@id,'topslot_container')]",
+          "//*[contains(@id,'ad_leftslot_container')]",
+          "//*[contains(@id,'footer')]",
+          "//div[contains(@class, 'wotd-box')]",
+          "//iframe"
+        ]
+      }
+    }
   ]
 }

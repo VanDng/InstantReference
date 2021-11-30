@@ -5,16 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InstanceReference"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="724" Width="495"
         Initialized="Window_Initialized">
     <Grid>
-        <TabControl Name="tabContainer" Visibility="Collapsed">
+        <TabControl Name="tabContainer">
             
         </TabControl>
-        <TabControl>
+        <!--<TabControl>
             <TabItem Header="Cam" IsSelected="True">
-                <WebBrowser Name="browserxx"></WebBrowser>
+                <wpf:ChromiumWebBrowser Grid.Row="0"
+                          x:Name="browser"/>
             </TabItem>
-        </TabControl>
+        </TabControl>-->
     </Grid>
 </Window>

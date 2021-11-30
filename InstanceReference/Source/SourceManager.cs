@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using InstanceReference.Extension;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,12 +18,22 @@ namespace InstanceReference
             var lookupSources = new List<LookupSource>();
 
             dynamic sources = JsonConvert.DeserializeObject(configContent);
-
             foreach (var source in sources.sources)
             {
-                var webSource = new WebLookupSource(source.name.ToString(),
+                HtmlFilter htmlFilter = null;
+
+                if (source.ContainsKey("html_filter"))
+                {
+                    var selectors = source.html_filter.selectors.ToObject<string[]>();
+                    htmlFilter = new HtmlFilter(selectors);
+                }
+
+                var webSource = new WebLookupSource(
+                                                    source.name.ToString(),
                                                     source.base_address.ToString(),
-                                                    source.uri.ToString());
+                                                    source.uri.ToString(),
+                                                    htmlFilter
+                                                    );
 
                 lookupSources.Add(webSource);
             }

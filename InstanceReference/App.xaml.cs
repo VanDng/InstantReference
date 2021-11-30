@@ -29,15 +29,27 @@ namespace InstanceReference
 
             var lookupManager = new LookupManager();
             lookupManager.Intialize(sourceManager.Sources);
-            lookupManager.OnLookupCompleted += (lookupresult) =>
+            lookupManager.OnLookupCompleted += async (lookupresult) =>
             {
-                displayManager.ShowLookupResult(lookupresult);
+                _ = Task.Run(() => displayManager.ShowLookupResult(lookupresult));
+            };
+
+            var dataTrigger = new DataTrigger();
+            dataTrigger.OnDataArrived += (text) =>
+            {
+                lookupManager.Lookup(text);
             };
 
             var clipboard = new ClipboardWatcher();
             clipboard.OnTextArrived += (text) =>
             {
-                lookupManager.Lookup(text.Value);
+                dataTrigger.Push(text.Value);
+            };
+
+            window.Closed += (s, e) =>
+            {
+                lookupManager.Dispose();
+                displayManager.Dispose();
             };
         }
     }

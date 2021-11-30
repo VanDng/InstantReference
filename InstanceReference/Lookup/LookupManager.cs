@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace InstanceReference
 {
@@ -36,7 +37,7 @@ namespace InstanceReference
         {
             foreach(var worker in _workers)
             {
-                worker.Lookup(text);
+                _ = Task.Run(() => worker.Lookup(text));
             }
         }
 
@@ -49,11 +50,11 @@ namespace InstanceReference
                 var webSource = source as WebLookupSource;
                 if (webSource != null)
                 {
-                    var worker = new WebLookupWorker(webSource.Name, webSource.BaseAddress, webSource.Uri);
+                    var worker = new WebLookupWorker(webSource);
 
                     worker.OnLookupCompleted += (lookupResult) =>
                     {
-                        OnLookupCompleted(new WebLookupResult(lookupResult.SourceName, lookupResult.Html));
+                        OnLookupCompleted(new WebLookupResult(lookupResult.SourceName, lookupResult.Url, lookupResult.Html));
                     };
 
                     _workers.Add(worker);
