@@ -29,7 +29,7 @@ namespace InstanceReference
 
             var lookupManager = new LookupManager();
             lookupManager.Intialize(sourceManager.Sources);
-            lookupManager.OnLookupCompleted += async (lookupresult) =>
+            lookupManager.OnLookupCompleted += (lookupresult) =>
             {
                 _ = Task.Run(() => displayManager.ShowLookupResult(lookupresult));
             };

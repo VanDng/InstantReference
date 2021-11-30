@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,6 +88,30 @@ namespace InstanceReference
                     {
                         target.Remove();
                     }
+                }
+            }
+
+            var t = "//script";
+            foreach (var node in doc.DocumentNode.SelectNodes(t))
+            {
+                // It intends to remove ads generation scripts
+                // but it's not really good approach, actually.
+                // Just because Ads Blocking implementation has some issues now haha
+                if (node.Attributes.Contains("src") == false)
+                {
+                    node.Remove();
+                }
+                else
+                {
+                    var scriptUrl = node.Attributes["src"].Value;
+                    Uri tmpUri;
+                    if (Uri.TryCreate(scriptUrl, UriKind.Absolute, out tmpUri))
+                    {
+                        if (AdBlockManager.IsBlock(tmpUri))
+                        {
+                            node.Remove();
+                        }
+                    }   
                 }
             }
 

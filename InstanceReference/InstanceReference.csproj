@@ -8,14 +8,27 @@
 
   <ItemGroup>
     <PackageReference Include="CefSharp.Wpf.NETCore" Version="95.7.141" />
+    <PackageReference Include="DistillNET" Version="1.6.6" />
     <PackageReference Include="HtmlAgilityPack.NetCore" Version="1.5.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="WpfAppBar" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="sources.json">
+    <None Update="AdBlock\easylist.data">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdBlock\easyprivacy.data">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdBlock\fanboyannoyance.data">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdBlock\ReadMe.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="sources.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

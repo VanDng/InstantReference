@@ -22,6 +22,8 @@
           "//*[contains(@id,'topslot_container')]",
           "//*[contains(@id,'ad_leftslot_container')]",
           "//*[contains(@id,'footer')]",
+          "//*[contains(@id,'ring-links-box')]",
+          "//*[contains(@id,'ad_contentslot')]",
           "//div[contains(@class, 'wotd-box')]",
           "//iframe"
         ]

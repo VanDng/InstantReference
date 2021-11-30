@@ -1,4 +1,6 @@
-﻿using CefSharp.Wpf;
+﻿using CefSharp;
+using CefSharp.Wpf;
+using InstanceReference.Display;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -45,7 +47,6 @@ namespace InstanceReference
                     var tab = new TabItem();
                     tab.Header = webSource.Name;
 
-
                     var webControl = InitializeChroniumBrowserInstance();
                     tab.Content = webControl;
 
@@ -73,6 +74,15 @@ namespace InstanceReference
 
         private ChromiumWebBrowser InitializeChroniumBrowserInstance()
         {
+            /*
+             * This is a temporary implementation in order to take advantage of the beauty UI from original websites.
+             * 
+             * In next phases, the lookup result will be standardized and the Display manager should only take one responsibility
+             * which displays the lookup result without any processing on the received data.
+             * 
+             * And the control ChromiumWebBrowser will be removed.
+             */
+
             var webControl = new ChromiumWebBrowser();
 
             //webControl.BrowserSettings.ImageLoading = CefSharp.CefState.Disabled;
@@ -88,6 +98,16 @@ namespace InstanceReference
             webControl.BrowserSettings.LocalStorage = CefSharp.CefState.Disabled;
             webControl.BrowserSettings.TabToLinks = CefSharp.CefState.Disabled;
             webControl.BrowserSettings.TextAreaResize = CefSharp.CefState.Disabled;
+
+            /*
+             * Custom the request handler to apply Ad blocking filters.
+             * 
+             * Note: Currently, it works unexpectedly.
+             * Somehow it reloads all resources which were removed completely from the html source.
+             * 
+             * Temporarily disable it and live with ads !!
+             */ 
+            //webControl.RequestHandler = new CustomRequestHandler();
 
             return webControl;
         }
