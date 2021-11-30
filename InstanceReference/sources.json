@@ -6,7 +6,8 @@
       "uri": "vi/dictionary/english/",
       "html_filter": {
         "selectors": [
-          ""
+          "//header[contains(@id, 'header')]",
+          "//*[contains(@class, 'topslot-container')]"
         ]
       }
     },
