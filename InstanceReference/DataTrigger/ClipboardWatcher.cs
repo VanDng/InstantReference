@@ -56,14 +56,10 @@ namespace InstanceReference
                 catch
                 { }
 
-                if (text.Length > 0)
+                if (text.Length > 0 &&
+                    text.Length < 50)
                 {
-                    if (text.Length == lastText.Length && // Avoid large text comparison
-                        lastText == text)
-                    {
-                        // Do nothing. Take a rest for a while.
-                    }
-                    else
+                    if (lastText != text)
                     {
                         OnTextArrived(new ClipBoardText()
                         {
@@ -71,7 +67,6 @@ namespace InstanceReference
                         });
 
                         lastText = text;
-
                     }
                 }
 

@@ -41,11 +41,7 @@ namespace InstanceReference
                 text.Length < 50 &&
                 text.Any(s => s >= 0 && s <= 9) == false)
             {
-                if (text.Length == _previousText.Length && // Avoid large text comparison
-                    _previousText == text)
-                {
-                }
-                else
+                if (_previousText != text)
                 {
                     needToTrigger = true;
                 }
