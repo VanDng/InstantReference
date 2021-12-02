@@ -31,7 +31,7 @@ namespace InstanceReference
         public static void Save(string configurationFilePath)
         {
             string json = JsonConvert.SerializeObject(Configuration, Formatting.Indented);
-            File.WriteAllText(configurationFilePath, json);
+            File.WriteAllText(configurationFilePath, json)
         }
     }
 }
