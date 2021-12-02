@@ -32,6 +32,8 @@ namespace InstanceReference
             _triggerWindow = new SettingWindow(this);
             _triggerWindow.Visibility = Visibility.Hidden;
 
+            _triggerWindow.Closed += (s, o) => Close();
+
             this.Loaded += MainWindow_Loaded;
             this.Closed += MainWindow_Closed;
             MouseLeave += MainWindow_MouseLeave;

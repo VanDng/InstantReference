@@ -21,16 +21,17 @@ namespace InstanceReference
             var configFile = Global.Constant.ConfigurationFilePath;
             if (File.Exists(configFile))
             {
-                ConfigurationManager.Load(configFile);
+                Global.ConfigurationManager.Load(configFile);
             }
             else
             {
-                ConfigurationManager.Save(configFile);
+                Global.ConfigurationManager.Save(configFile);
             }
 
             MainWindow window = new MainWindow();
             window.Show();
 
+            Exit += (o,e) => Global.ConfigurationManager.Save(Global.Constant.ConfigurationFilePath);
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             MainWindow = window;
 

@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace InstanceReference
 {
@@ -26,6 +18,8 @@ namespace InstanceReference
         private bool _isMoveDowned;
         private bool _isMouseMove;
 
+        private bool _isLocationLoading;
+
         public SettingWindow(MainWindow mainWindow)
         {
             // Do not know why but these two line of setting make the option Window.SizeToContent work!!
@@ -38,24 +32,50 @@ namespace InstanceReference
             _mainWindow = mainWindow;
             InitializeComponent();
 
-            this.Loaded += SettingWindow_Loaded;
+            InitializeContextMenu();
 
-            this.PreviewMouseDown += SettingWindow_PreviewMouseDown;
-            this.PreviewMouseUp += SettingWindow_PreviewMouseUp;
-            this.PreviewMouseMove += SettingWindow_PreviewMouseMove;
+            Loaded += SettingWindow_Loaded;
+            LocationChanged += SettingWindow_LocationChanged;
 
-            MouseUp += SettingWindow_MouseUp;
+            PreviewMouseLeftButtonDown += SettingWindow_PreviewMouseDown;
+            PreviewMouseLeftButtonUp += SettingWindow_PreviewMouseUp;
+            PreviewMouseMove += SettingWindow_PreviewMouseMove;
+
+            MouseUp += SettingWindow_PreviewMouseUp;
+            MouseLeave += SettingWindow_MouseLeave;
         }
 
-        private void SettingWindow_MouseUp(object sender, MouseButtonEventArgs e)
+        private void SettingWindow_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (_mouseEnterWatch.Elapsed.TotalSeconds < 2.0)
-            {
-                _mainWindow.HideWindow(false);
-            }
-
             _mouseEnterWatch.Stop();
             _isMoveDowned = false;
+        }
+
+        private void InitializeContextMenu()
+        {
+            var contextMenu = new ContextMenu();
+            contextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Exit"
+            });
+            contextMenu.PreviewMouseDown += (o, s) =>
+            {
+                Close();
+            };
+
+            ContextMenu = contextMenu;
+        }
+
+        private void SettingWindow_LocationChanged(object sender, System.EventArgs e)
+        {
+            if (_isLocationLoading == false)
+            {
+                var dim = Global.ConfigurationManager.Configuration.TriggerWindow_Dimension;
+                dim.Left = Left;
+                dim.Top = Top;
+                dim.Height = Height;
+                dim.Width = Width;
+            }
         }
 
         private void SettingWindow_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -91,10 +111,54 @@ namespace InstanceReference
 
         private void SettingWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var v = VisualTreeHelper.GetDpi(this);
-            var w = ScreenHelper.Primary.WorkingArea.Width / v.DpiScaleY;
-            var t = (int)(w - (int)Width);
-            Left = t;
+            _isLocationLoading = true;
+
+            var dim = Global.ConfigurationManager.Configuration.TriggerWindow_Dimension;
+
+            if (dim.Left == 0)
+            {
+                var v = VisualTreeHelper.GetDpi(this);
+                var w = ScreenHelper.Primary.WorkingArea.Width / v.DpiScaleY;
+                var t = (int)(w - (int)Width);
+                Left = t;
+            }
+            else
+            {
+                Left = dim.Left;
+            }
+
+            if (dim.Top == 0)
+            {
+                var v = VisualTreeHelper.GetDpi(this);
+                var w = ScreenHelper.Primary.WorkingArea.Height / v.DpiScaleX;
+                var t = (int)(w - (int)Height);
+                Top = t / 2;
+            }
+            else
+            {
+                Top = dim.Top;
+            }
+
+            if (dim.Width != 0 && dim.Height != 0)
+            {
+                SizeToContent = SizeToContent.Manual;
+                Width = dim.Width;
+                Height = dim.Height;
+            }
+            else if (dim.Width != 0)
+            {
+                SizeToContent = SizeToContent.Height;
+                Width = dim.Width;
+            }
+            else if (dim.Height != 0)
+            {
+                SizeToContent = SizeToContent.Width;
+                Height = dim.Height;
+            }
+            else
+            { }
+
+            _isLocationLoading = false;
         }
 
         private void SettingWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
