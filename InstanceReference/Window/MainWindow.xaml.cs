@@ -24,13 +24,17 @@ namespace InstanceReference
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Stopwatch _visibilityMonitor;
+        private Timer _visibilityTimer;
+        private bool _SureToBeClosing;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _visibilityMonitor = new Stopwatch();
+            _visibilityTimer = new Timer((s) =>
+            {
+                _SureToBeClosing = true;
+            }, null, Timeout.Infinite, Timeout.Infinite);
 
             Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
@@ -41,13 +45,19 @@ namespace InstanceReference
             SystemEvents.DisplaySettingsChanged += new EventHandler(SystemEvents_DisplaySettingsChanged);
         }
 
+        private void VisibilityTimerProc(object state)
+        {
+            _SureToBeClosing = true;
+        }
+
         private void MainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             bool isVisible = (bool)e.NewValue;
 
             if (isVisible)
             {
-                _visibilityMonitor.Restart();
+                _SureToBeClosing = false;
+                _visibilityTimer.Change(300, Timeout.Infinite);
             }
 
             UpdateWindow();
@@ -56,8 +66,8 @@ namespace InstanceReference
         private void MainWindow_MouseLeave(object sender, MouseEventArgs e)
         {
             // There's the problem that MouseLeave events fire immediately after the window shown up, sometimes.
-            // The monitor prevents that problem.
-            if (_visibilityMonitor.Elapsed.TotalMilliseconds >= 300)
+            // A monitor prevents that problem.
+            if (_SureToBeClosing)
             {
                 Visibility = Visibility.Hidden;
             }
