@@ -1,35 +1,40 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using XamlAnimatedGif;
 
 namespace InstanceReference
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class SettingWindow
+    public partial class TriggerWindow
         : Window
     {
-        private MainWindow _mainWindow;
+        public event TriggeredHandler OnTriggered;
 
-        private Stopwatch _mouseEnterWatch;
-        private bool _isMoveDowned;
-        private bool _isMouseMove;
+        public delegate void TriggeredHandler(TriggerWindow triggerWindowHandle);
+
+        private Timer _beginMovingTimer;
+        private bool _isMovingState;
+        private bool _isEnteredDragState;
 
         private bool _isLocationLoading;
 
-        public SettingWindow(MainWindow mainWindow)
+        public TriggerWindow()
         {
             // Do not know why but these two line of setting make the option Window.SizeToContent work!!
             // Can't beleive it.
             Width = 0;
             Height = 0;
 
-            _mouseEnterWatch = new Stopwatch();
+            _beginMovingTimer = new Timer(BeginMovingCallback, null, Timeout.Infinite, Timeout.Infinite);
 
-            _mainWindow = mainWindow;
             InitializeComponent();
 
             InitializeContextMenu();
@@ -45,10 +50,18 @@ namespace InstanceReference
             MouseLeave += SettingWindow_MouseLeave;
         }
 
+        private void BeginMovingCallback(object state)
+        {
+            indicator.Dispatcher.InvokeAsync(() =>
+            {
+                AnimationBehavior.SetSourceUri(indicator, new Uri("pack://application:,,,/Window/Icon/drag.gif"));
+            });
+            _isMovingState = true;
+        }
+
         private void SettingWindow_MouseLeave(object sender, MouseEventArgs e)
         {
-            _mouseEnterWatch.Stop();
-            _isMoveDowned = false;
+            stopMoving();
         }
 
         private void InitializeContextMenu()
@@ -80,33 +93,38 @@ namespace InstanceReference
 
         private void SettingWindow_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (_isMoveDowned == false) return;
-
-            if (_isMouseMove == false && // Avoid stop watch evaluation pressure
-                _mouseEnterWatch.Elapsed.TotalSeconds >= 2.0)
+            if (_isMovingState)
             {
-                _isMouseMove = true;
-            }
-            else
-            {
-                _isMouseMove = false;
-            }
-
-            if (_isMouseMove)
-            {
-                DragMove();
+                if (_isEnteredDragState == false)
+                {
+                    _isEnteredDragState = true;
+                    DragMove();
+                }
             }
         }
 
         private void SettingWindow_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (_mouseEnterWatch.Elapsed.TotalSeconds < 2.0)
+            if (_isMovingState == false)
             {
-                _mainWindow.HideWindow(false);
+                Visibility = Visibility.Hidden;
+                OnTriggered?.Invoke(this);
             }
 
-            _mouseEnterWatch.Stop();
-            _isMoveDowned = false;
+            stopMoving();
+        }
+
+        private void stopMoving()
+        {
+            _beginMovingTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+            if (_isMovingState || _isEnteredDragState)
+            {
+                AnimationBehavior.SetSourceUri(indicator, new Uri("pack://application:,,,/Window/Icon/check.gif"));
+            }
+
+            _isMovingState = false;
+            _isEnteredDragState = false;
         }
 
         private void SettingWindow_Loaded(object sender, RoutedEventArgs e)
@@ -163,8 +181,7 @@ namespace InstanceReference
 
         private void SettingWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            _isMoveDowned = true;
-            _mouseEnterWatch.Restart();
+            _beginMovingTimer.Change((int)(TimeSpan.FromSeconds(2).TotalMilliseconds), Timeout.Infinite);
         }
     }
 }

@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WpfAppBar;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace InstanceReference
 {
@@ -23,44 +24,59 @@ namespace InstanceReference
     /// </summary>
     public partial class MainWindow : Window
     {
-        private SettingWindow _triggerWindow;
+        private Stopwatch _visibilityMonitor;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _triggerWindow = new SettingWindow(this);
-            _triggerWindow.Visibility = Visibility.Hidden;
+            _visibilityMonitor = new Stopwatch();
 
-            _triggerWindow.Closed += (s, o) => Close();
-
-            this.Loaded += MainWindow_Loaded;
-            this.Closed += MainWindow_Closed;
+            Loaded += MainWindow_Loaded;
+            Closed += MainWindow_Closed;
             MouseLeave += MainWindow_MouseLeave;
+
+            IsVisibleChanged += MainWindow_IsVisibleChanged;
 
             SystemEvents.DisplaySettingsChanged += new EventHandler(SystemEvents_DisplaySettingsChanged);
         }
 
+        private void MainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            bool isVisible = (bool)e.NewValue;
+
+            if (isVisible)
+            {
+                _visibilityMonitor.Restart();
+            }
+
+            UpdateWindow();
+        }
+
         private void MainWindow_MouseLeave(object sender, MouseEventArgs e)
         {
-            HideWindow(true);
+            // There's the problem that MouseLeave events fire immediately after the window shown up, sometimes.
+            // The monitor prevents that problem.
+            if (_visibilityMonitor.Elapsed.TotalMilliseconds >= 300)
+            {
+                Visibility = Visibility.Hidden;
+            }
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
-            UpdateWindow(Visibility);
+            UpdateWindow();
         }
 
         private void MainWindow_Closed(object sender, EventArgs e)
         {
-        
             //Make the window an appbar:
             //AppBarFunctions.SetAppBar(this, ABEdge.None);
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            HideWindow(true);
+            Visibility = Visibility.Hidden;
         }
 
         private void Window_Initialized(object sender, EventArgs e)
@@ -68,7 +84,7 @@ namespace InstanceReference
 
         }
 
-        private void UpdateWindow(Visibility visibility)
+        private void UpdateWindow()
         {
             var v = VisualTreeHelper.GetDpi(this);
 
@@ -78,31 +94,13 @@ namespace InstanceReference
             Top = 0;
             Height = h;
 
-            if (visibility == Visibility.Hidden)
+            if (Visibility == Visibility.Hidden)
             {
                 Left = w;
             }
             else
             {
                 Left = w - Width;
-            }
-        }
-
-        public void HideWindow(bool isHidden)
-        {
-            if (isHidden)
-            {
-                _triggerWindow.Visibility = Visibility.Visible;
-                
-                UpdateWindow(Visibility.Hidden);
-                Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                _triggerWindow.Visibility = Visibility.Hidden;
-
-                UpdateWindow(Visibility.Visible);
-                Visibility = Visibility.Visible;
             }
         }
     }

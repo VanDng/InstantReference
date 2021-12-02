@@ -29,7 +29,28 @@ namespace InstanceReference
             }
 
             MainWindow window = new MainWindow();
-            window.Show();
+
+            var triggerWindow = new TriggerWindow();
+            triggerWindow.Show();
+            triggerWindow.OnTriggered += (w) =>
+            {
+                window.Visibility = Visibility.Visible;
+                triggerWindow.Visibility = Visibility.Hidden;
+            };
+            triggerWindow.Closed += (o, s) =>
+            {
+                window.Close();
+            };
+
+            window.IsVisibleChanged += (o, s) =>
+            {
+                bool isVisile = (bool)s.NewValue;
+
+                if (isVisile == false)
+                {
+                    triggerWindow.Visibility = Visibility.Visible;
+                }
+            };
 
             Exit += (o,e) => Global.ConfigurationManager.Save(Global.Constant.ConfigurationFilePath);
             ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -57,7 +78,7 @@ namespace InstanceReference
             var clipboard = new ClipboardWatcher();
             clipboard.OnTextArrived += (text) =>
             {
-                //dataTrigger.Push(text.Value);
+                dataTrigger.Push(text.Value);
             };
 
             window.Closed += (s, e) =>

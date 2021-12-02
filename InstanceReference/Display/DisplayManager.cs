@@ -64,7 +64,7 @@ namespace InstanceReference
             {
                 var webControl = _sourceMaps[webLookup.SourceName] as ChromiumWebBrowser;
 
-                webControl.Dispatcher.Invoke(() =>
+                webControl.Dispatcher.InvokeAsync(() =>
                 {
                     _ = CefSharp.WebBrowserExtensions.LoadHtml(webControl, webLookup.Html, webLookup.Url);
                     Debug.WriteLine(webLookup.Url);

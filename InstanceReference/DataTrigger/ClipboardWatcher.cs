@@ -22,7 +22,7 @@ namespace InstanceReference
 
     partial class ClipboardWatcher
     {
-        private TimeSpan _pollingInterval = TimeSpan.FromSeconds(0.5);
+        private TimeSpan _pollingInterval = TimeSpan.FromMilliseconds(0.2);
 
         private Thread _threadWatcher;
         private bool _stopped;

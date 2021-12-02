@@ -13,6 +13,10 @@ namespace InstanceReference
         public event LookupResultHandler OnLookupCompleted;
 
         public delegate void LookupResultHandler(LookupResult lookupResult);
+
+        public event LookupBeginHandler OnLookupBegin;
+
+        public delegate void LookupBeginHandler();
     }
 
     partial class LookupManager : IDisposable
