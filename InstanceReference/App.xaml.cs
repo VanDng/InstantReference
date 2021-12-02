@@ -43,7 +43,7 @@ namespace InstanceReference
             var clipboard = new ClipboardWatcher();
             clipboard.OnTextArrived += (text) =>
             {
-                dataTrigger.Push(text.Value);
+                //dataTrigger.Push(text.Value);
             };
 
             window.Closed += (s, e) =>

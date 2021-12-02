@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:InstanceReference"
         mc:Ignorable="d"
         Title="MainWindow" Height="724" Width="495"
-        Initialized="Window_Initialized">
+        Initialized="Window_Initialized"
+        WindowStyle="None"
+        AllowsTransparency="True">
     <Grid>
         <TabControl Name="tabContainer">
             
