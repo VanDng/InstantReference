@@ -46,7 +46,7 @@ namespace InstanceReference
             PreviewMouseLeftButtonUp += SettingWindow_PreviewMouseUp;
             PreviewMouseMove += SettingWindow_PreviewMouseMove;
 
-            MouseUp += SettingWindow_PreviewMouseUp;
+            //MouseUp += SettingWindow_PreviewMouseUp;
             MouseLeave += SettingWindow_MouseLeave;
         }
 

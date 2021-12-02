@@ -36,18 +36,12 @@ namespace InstanceReference
                 _SureToBeClosing = true;
             }, null, Timeout.Infinite, Timeout.Infinite);
 
-            Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
             MouseLeave += MainWindow_MouseLeave;
 
             IsVisibleChanged += MainWindow_IsVisibleChanged;
 
             SystemEvents.DisplaySettingsChanged += new EventHandler(SystemEvents_DisplaySettingsChanged);
-        }
-
-        private void VisibilityTimerProc(object state)
-        {
-            _SureToBeClosing = true;
         }
 
         private void MainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -59,8 +53,6 @@ namespace InstanceReference
                 _SureToBeClosing = false;
                 _visibilityTimer.Change(300, Timeout.Infinite);
             }
-
-            UpdateWindow();
         }
 
         private void MainWindow_MouseLeave(object sender, MouseEventArgs e)
@@ -69,13 +61,13 @@ namespace InstanceReference
             // A monitor prevents that problem.
             if (_SureToBeClosing)
             {
-                Visibility = Visibility.Hidden;
+                ChangeVisibility(Visibility.Hidden);
             }
         }
 
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
-            UpdateWindow();
+            UpdateWindow(Visibility);
         }
 
         private void MainWindow_Closed(object sender, EventArgs e)
@@ -84,17 +76,27 @@ namespace InstanceReference
             //AppBarFunctions.SetAppBar(this, ABEdge.None);
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            Visibility = Visibility.Hidden;
-        }
-
         private void Window_Initialized(object sender, EventArgs e)
         {
 
         }
 
-        private void UpdateWindow()
+        public void ChangeVisibility(Visibility visibility)
+        {
+            // The order of callings is important.
+            if (visibility == Visibility.Visible)
+            {
+                UpdateWindow(visibility);
+                Visibility = visibility;
+            }
+            else
+            {
+                Visibility = visibility;
+                UpdateWindow(visibility);
+            }
+        }
+
+        private void UpdateWindow(Visibility visibility)
         {
             var v = VisualTreeHelper.GetDpi(this);
 
@@ -104,7 +106,7 @@ namespace InstanceReference
             Top = 0;
             Height = h;
 
-            if (Visibility == Visibility.Hidden)
+            if (visibility == Visibility.Hidden)
             {
                 Left = w;
             }

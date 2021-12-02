@@ -29,13 +29,13 @@ namespace InstanceReference
             }
 
             MainWindow window = new MainWindow();
+            window.ChangeVisibility(Visibility.Hidden);
 
             var triggerWindow = new TriggerWindow();
             triggerWindow.Show();
             triggerWindow.OnTriggered += (w) =>
             {
-                window.Visibility = Visibility.Visible;
-                triggerWindow.Visibility = Visibility.Hidden;
+                window.ChangeVisibility(Visibility.Visible);
             };
             triggerWindow.Closed += (o, s) =>
             {
