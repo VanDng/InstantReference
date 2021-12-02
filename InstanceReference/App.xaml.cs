@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +16,18 @@ namespace InstanceReference
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            Global.Setup.Install();
+
+            var configFile = Global.Constant.ConfigurationFilePath;
+            if (File.Exists(configFile))
+            {
+                ConfigurationManager.Load(configFile);
+            }
+            else
+            {
+                ConfigurationManager.Save(configFile);
+            }
+
             MainWindow window = new MainWindow();
             window.Show();
 

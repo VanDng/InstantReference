@@ -17,7 +17,8 @@ namespace InstanceReference
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class SettingWindow : Window
+    public partial class SettingWindow
+        : Window
     {
         private MainWindow _mainWindow;
 

@@ -4,11 +4,12 @@ using System.Text;
 
 namespace InstanceReference
 {
-    static class Global
+    static partial class Global
     {
         public static class Constant
         {
             public static string LookupSourceFilePath = "sources.json";
+            public static string ConfigurationFilePath = "configuration.json";
         }
     }
 }
