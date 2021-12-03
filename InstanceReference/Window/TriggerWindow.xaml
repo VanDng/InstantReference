@@ -10,12 +10,18 @@
         ShowInTaskbar="False"
         WindowStyle="None"
         AllowsTransparency="true"
-        SizeToContent="WidthAndHeight"
-        Topmost="True">
-    <Border BorderBrush="#FF000000" BorderThickness="1" CornerRadius="10">
-        <Image gif:AnimationBehavior.SourceUri=".\Icon\check.gif"
-                gif:AnimationBehavior.RepeatBehavior="Forever" Width="30" Height="30"
-               x:Name="indicator"
-               />
-    </Border>
+        Background="Transparent"
+        Topmost="True"
+        Width="50"
+        Height="50">
+
+    <Grid x:Name="grid">
+        <Ellipse x:Name="circle" Fill="White" />
+        
+        <Image gif:AnimationBehavior.SourceUri=".\Icon\ok_4.gif"
+                        gif:AnimationBehavior.RepeatBehavior="Forever"
+                       x:Name="indicator"
+                       />
+    </Grid>
+
 </Window>

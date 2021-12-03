@@ -30,8 +30,8 @@ namespace InstanceReference
         {
             // Do not know why but these two line of setting make the option Window.SizeToContent work!!
             // Can't beleive it.
-            Width = 0;
-            Height = 0;
+            //Width = 0;
+            //Height = 0;
 
             _beginMovingTimer = new Timer(BeginMovingCallback, null, Timeout.Infinite, Timeout.Infinite);
 
@@ -48,6 +48,13 @@ namespace InstanceReference
 
             //MouseUp += SettingWindow_PreviewMouseUp;
             MouseLeave += SettingWindow_MouseLeave;
+
+            ContentRendered += TriggerWindow_ContentRendered;
+        }
+
+        private void TriggerWindow_ContentRendered(object sender, EventArgs e)
+        {
+            adjustCircleElement();
         }
 
         private void BeginMovingCallback(object state)
@@ -120,7 +127,7 @@ namespace InstanceReference
 
             if (_isMovingState || _isEnteredDragState)
             {
-                AnimationBehavior.SetSourceUri(indicator, new Uri("pack://application:,,,/Window/Icon/check.gif"));
+                AnimationBehavior.SetSourceUri(indicator, new Uri("pack://application:,,,/Window/Icon/ok_4.gif"));
             }
 
             _isMovingState = false;
@@ -182,6 +189,44 @@ namespace InstanceReference
         private void SettingWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             _beginMovingTimer.Change((int)(TimeSpan.FromSeconds(2).TotalMilliseconds), Timeout.Infinite);
+        }
+
+        private void adjustCircleElement()
+        {
+            /*
+             * Haha if you are good at math and have a better solution, tell me.
+             * For now, I use the try and error approach again haha
+             */
+
+            double actualDiagonal = Math.Sqrt(Math.Pow(indicator.ActualWidth, 2) + Math.Pow(indicator.ActualHeight, 2));
+
+            double expecteddiagonal = circle.ActualWidth;
+
+            double newWidth = indicator.ActualWidth;
+            double newHeight = indicator.ActualHeight;
+
+            double step = 0.1;
+
+            if (expecteddiagonal >= actualDiagonal)
+            {
+                while (expecteddiagonal >= Math.Sqrt(Math.Pow(newWidth + step, 2) + Math.Pow(newHeight + step, 2)))
+                {
+                    newWidth += step;
+                    newHeight += step;
+                }
+            }
+            else if (expecteddiagonal <= actualDiagonal)
+            {
+                step = step * -1;
+                while (expecteddiagonal <= Math.Sqrt(Math.Pow(newWidth + step, 2) + Math.Pow(newHeight + step, 2)))
+                {
+                    newWidth += step;
+                    newHeight += step;
+                }
+            }
+
+            indicator.Width = newWidth;
+            indicator.Height = newHeight;
         }
     }
 }

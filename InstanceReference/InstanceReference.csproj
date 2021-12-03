@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Window\Icon\check.gif" />
     <None Remove="Window\Icon\drag.gif" />
     <None Remove="Window\Icon\loading.gif" />
+    <None Remove="Window\Icon\ok_4.gif" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,15 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Window\Icon\check.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Window\Icon\drag.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Window\Icon\loading.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Window\Icon\ok_4.gif" />
   </ItemGroup>
 
   <ItemGroup>

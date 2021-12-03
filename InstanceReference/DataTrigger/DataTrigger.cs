@@ -25,8 +25,6 @@ namespace InstanceReference
         {
             if (IsNeedToTrigger(data))
             {
-                data = data.ToLower();
-
                 OnDataArrived(data);
                 _previousText = data;
             }
@@ -36,10 +34,12 @@ namespace InstanceReference
         {
             bool needToTrigger = false;
 
+            text = text.ToLower()
+                       .Trim();
+
             if (text.Length > 0 &&
-                text.Contains('.') == false &&
                 text.Length < 50 &&
-                text.Any(s => s >= 0 && s <= 9) == false)
+                text.Any(s => (s < 'a' || s > 'z') && (s != ' ')) == false)
             {
                 if (_previousText != text)
                 {
