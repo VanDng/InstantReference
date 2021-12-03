@@ -13,7 +13,7 @@ namespace InstanceReference
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class TriggerWindow
+    partial class TriggerWindow
         : Window
     {
         public event TriggeredHandler OnTriggered;
@@ -26,6 +26,8 @@ namespace InstanceReference
 
         private bool _isLocationLoading;
 
+        private double _opacityFocus = 1;
+        private double _opacityNotFocus = 0.7;
         public TriggerWindow()
         {
             // Do not know why but these two line of setting make the option Window.SizeToContent work!!
@@ -33,7 +35,7 @@ namespace InstanceReference
             //Width = 0;
             //Height = 0;
 
-            _beginMovingTimer = new Timer(BeginMovingCallback, null, Timeout.Infinite, Timeout.Infinite);
+            _beginMovingTimer = new Timer(beginDragging, null, Timeout.Infinite, Timeout.Infinite);
 
             InitializeComponent();
 
@@ -48,27 +50,84 @@ namespace InstanceReference
 
             //MouseUp += SettingWindow_PreviewMouseUp;
             MouseLeave += SettingWindow_MouseLeave;
+            MouseEnter += TriggerWindow_MouseEnter;
 
             ContentRendered += TriggerWindow_ContentRendered;
+
+            Opacity = 0;
         }
 
+        private void TriggerWindow_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Opacity = _opacityFocus;
+        }
+
+        public void SetStatus(TriggerStatus triggerStatus)
+        {
+            string iconName = string.Empty;
+
+            switch (triggerStatus)
+            {
+                case TriggerStatus.LookupInProgress:
+                    iconName = "loading.gif";
+                        break;
+
+                case TriggerStatus.LookupCompleted:
+                    iconName = "ok_4.gif";
+                    break;
+
+                default:
+                    throw new Exception("Not supported trigger status");
+            }
+
+            string resourcePath = $"pack://application:,,,/Window/Icon/{iconName}";
+
+            indicator.Dispatcher.InvokeAsync(() =>
+            {
+                AnimationBehavior.SetSourceUri(indicator, new Uri(resourcePath));
+            });
+        }
         private void TriggerWindow_ContentRendered(object sender, EventArgs e)
         {
             adjustCircleElement();
+
+            Opacity = _opacityNotFocus;
         }
 
-        private void BeginMovingCallback(object state)
+        private void beginDragging(object state)
         {
-            indicator.Dispatcher.InvokeAsync(() =>
+            draggingIndicator.Dispatcher.InvokeAsync(() =>
             {
-                AnimationBehavior.SetSourceUri(indicator, new Uri("pack://application:,,,/Window/Icon/drag.gif"));
+                // Yes, Opacity solves the problem of display delaying.
+                // It's there for a reason !
+                //draggingIndicator.Visibility = Visibility.Visible;
+                draggingIndicator.Opacity = 1;
             });
+
             _isMovingState = true;
+        }
+
+        private void stopDragging()
+        {
+            _beginMovingTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+            if (_isMovingState || _isEnteredDragState)
+            {
+                draggingIndicator.Dispatcher.InvokeAsync(() =>
+                {
+                    //draggingIndicator.Visibility = Visibility.Collapsed;
+                    draggingIndicator.Opacity = 0;
+                });
+            }
+
+            _isMovingState = false;
+            _isEnteredDragState = false;
         }
 
         private void SettingWindow_MouseLeave(object sender, MouseEventArgs e)
         {
-            stopMoving();
+            Opacity = _opacityNotFocus;
+            stopDragging();
         }
 
         private void InitializeContextMenu()
@@ -118,20 +177,7 @@ namespace InstanceReference
                 OnTriggered?.Invoke(this);
             }
 
-            stopMoving();
-        }
-
-        private void stopMoving()
-        {
-            _beginMovingTimer.Change(Timeout.Infinite, Timeout.Infinite);
-
-            if (_isMovingState || _isEnteredDragState)
-            {
-                AnimationBehavior.SetSourceUri(indicator, new Uri("pack://application:,,,/Window/Icon/ok_4.gif"));
-            }
-
-            _isMovingState = false;
-            _isEnteredDragState = false;
+            stopDragging();
         }
 
         private void SettingWindow_Loaded(object sender, RoutedEventArgs e)
@@ -188,7 +234,7 @@ namespace InstanceReference
 
         private void SettingWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            _beginMovingTimer.Change((int)(TimeSpan.FromSeconds(2).TotalMilliseconds), Timeout.Infinite);
+            _beginMovingTimer.Change((int)(TimeSpan.FromSeconds(1).TotalMilliseconds), Timeout.Infinite);
         }
 
         private void adjustCircleElement()
@@ -227,6 +273,9 @@ namespace InstanceReference
 
             indicator.Width = newWidth;
             indicator.Height = newHeight;
+
+            draggingIndicator.Width = newWidth;
+            draggingIndicator.Height = newHeight;
         }
     }
 }

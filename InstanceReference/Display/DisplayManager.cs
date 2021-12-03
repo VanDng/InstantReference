@@ -56,7 +56,6 @@ namespace InstanceReference
                 }
             }
         }
-
         public void ShowLookupResult(LookupResult lookupResult)
         {
             var webLookup = lookupResult as WebLookupResult;
@@ -71,7 +70,6 @@ namespace InstanceReference
                 });
             }
         }
-
         private ChromiumWebBrowser InitializeChroniumBrowserInstance()
         {
             /*

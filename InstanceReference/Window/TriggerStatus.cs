@@ -4,9 +4,9 @@ using System.Text;
 
 namespace InstanceReference
 {
-    enum LookupStatus
+    public enum TriggerStatus
     {
-        Idle,
-        Working
+        LookupInProgress,
+        LookupCompleted
     }
 }

@@ -22,6 +22,11 @@
                         gif:AnimationBehavior.RepeatBehavior="Forever"
                        x:Name="indicator"
                        />
+
+        <Image gif:AnimationBehavior.SourceUri=".\Icon\drag.gif"
+                        gif:AnimationBehavior.RepeatBehavior="Forever"
+                       x:Name="draggingIndicator"
+                       Opacity="0"/>
     </Grid>
 
 </Window>

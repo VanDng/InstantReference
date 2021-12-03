@@ -66,12 +66,14 @@ namespace InstanceReference
             lookupManager.Intialize(sourceManager.Sources);
             lookupManager.OnLookupCompleted += (lookupresult) =>
             {
-                _ = Task.Run(() => displayManager.ShowLookupResult(lookupresult));
+                displayManager.ShowLookupResult(lookupresult);
+                triggerWindow.SetStatus(TriggerStatus.LookupCompleted);
             };
 
             var dataTrigger = new DataTrigger();
             dataTrigger.OnDataArrived += (text) =>
             {
+                triggerWindow.SetStatus(TriggerStatus.LookupInProgress);
                 lookupManager.Lookup(text);
             };
 
