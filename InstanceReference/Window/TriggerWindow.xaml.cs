@@ -20,7 +20,10 @@ namespace InstanceReference
 
         public delegate void TriggeredHandler(TriggerWindow triggerWindowHandle);
 
+        private int _clickDurationToMove = 200;
         private Timer _beginMovingTimer;
+        private Stopwatch _movingWatch;
+        private bool _isMouseDowned;
         private bool _isMovingState;
         private bool _isEnteredDragState;
 
@@ -28,6 +31,7 @@ namespace InstanceReference
 
         private double _opacityFocus = 1;
         private double _opacityNotFocus = 0.7;
+
         public TriggerWindow()
         {
             // Do not know why but these two line of setting make the option Window.SizeToContent work!!
@@ -35,7 +39,9 @@ namespace InstanceReference
             //Width = 0;
             //Height = 0;
 
-            _beginMovingTimer = new Timer(beginDragging, null, Timeout.Infinite, Timeout.Infinite);
+            _isMouseDowned = false;
+            _movingWatch = new Stopwatch();
+            _beginMovingTimer = new Timer(ShowDragIndicator, true, Timeout.Infinite, Timeout.Infinite);
 
             InitializeComponent();
 
@@ -87,6 +93,7 @@ namespace InstanceReference
                 AnimationBehavior.SetSourceUri(indicator, new Uri(resourcePath));
             });
         }
+
         private void TriggerWindow_ContentRendered(object sender, EventArgs e)
         {
             adjustCircleElement();
@@ -94,31 +101,33 @@ namespace InstanceReference
             Opacity = _opacityNotFocus;
         }
 
-        private void beginDragging(object state)
+        private void ShowDragIndicator(bool isShow)
         {
             draggingIndicator.Dispatcher.InvokeAsync(() =>
             {
                 // Yes, Opacity solves the problem of display delaying.
                 // It's there for a reason !
                 //draggingIndicator.Visibility = Visibility.Visible;
-                draggingIndicator.Opacity = 1;
+                draggingIndicator.Opacity = isShow ? 1 : 0;
             });
+        }
 
-            _isMovingState = true;
+        private void ShowDragIndicator(object state)
+        {
+            bool isShow = (bool)state;
+
+            if (isShow &&
+                (_isMovingState || _isMouseDowned))
+            {
+                ShowDragIndicator(isShow);
+            }
         }
 
         private void stopDragging()
         {
-            _beginMovingTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            _movingWatch.Stop();
 
-            if (_isMovingState || _isEnteredDragState)
-            {
-                draggingIndicator.Dispatcher.InvokeAsync(() =>
-                {
-                    //draggingIndicator.Visibility = Visibility.Collapsed;
-                    draggingIndicator.Opacity = 0;
-                });
-            }
+            ShowDragIndicator(false);
 
             _isMovingState = false;
             _isEnteredDragState = false;
@@ -159,11 +168,19 @@ namespace InstanceReference
 
         private void SettingWindow_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
+            if (_isMovingState == false &&
+                _movingWatch.IsRunning &&
+                _movingWatch.ElapsedMilliseconds > _clickDurationToMove)
+            {
+                _isMovingState = true;
+            }
+
             if (_isMovingState)
             {
                 if (_isEnteredDragState == false)
                 {
                     _isEnteredDragState = true;
+
                     DragMove();
                 }
             }
@@ -171,13 +188,15 @@ namespace InstanceReference
 
         private void SettingWindow_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (_isMovingState == false)
+            if (_isMouseDowned == true &&
+                _isMovingState == false)
             {
-                Visibility = Visibility.Hidden;
                 OnTriggered?.Invoke(this);
             }
 
             stopDragging();
+
+            _isMouseDowned = false;
         }
 
         private void SettingWindow_Loaded(object sender, RoutedEventArgs e)
@@ -234,7 +253,10 @@ namespace InstanceReference
 
         private void SettingWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            _beginMovingTimer.Change((int)(TimeSpan.FromSeconds(1).TotalMilliseconds), Timeout.Infinite);
+            _isMouseDowned = true;
+            _isMovingState = false;
+            _movingWatch.Restart();
+            _beginMovingTimer.Change(_clickDurationToMove, Timeout.Infinite);
         }
 
         private void adjustCircleElement()

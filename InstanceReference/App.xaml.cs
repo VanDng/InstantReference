@@ -42,15 +42,8 @@ namespace InstanceReference
                 window.Close();
             };
 
-            window.IsVisibleChanged += (o, s) =>
-            {
-                bool isVisile = (bool)s.NewValue;
-
-                if (isVisile == false)
-                {
-                    triggerWindow.Visibility = Visibility.Visible;
-                }
-            };
+            window.Owner = triggerWindow;
+            window.Show();
 
             Exit += (o,e) => Global.ConfigurationManager.Save(Global.Constant.ConfigurationFilePath);
             ShutdownMode = ShutdownMode.OnMainWindowClose;

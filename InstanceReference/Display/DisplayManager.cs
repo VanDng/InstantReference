@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace InstanceReference
 {
@@ -56,6 +58,7 @@ namespace InstanceReference
                 }
             }
         }
+
         public void ShowLookupResult(LookupResult lookupResult)
         {
             var webLookup = lookupResult as WebLookupResult;
@@ -70,6 +73,7 @@ namespace InstanceReference
                 });
             }
         }
+
         private ChromiumWebBrowser InitializeChroniumBrowserInstance()
         {
             /*
@@ -104,10 +108,17 @@ namespace InstanceReference
              * Somehow it reloads all resources which were removed completely from the html source.
              * 
              * Temporarily disable it and live with ads !!
-             */ 
+             */
             //webControl.RequestHandler = new CustomRequestHandler();
 
+            webControl.AddHandler(UIElement.MouseDownEvent, new MouseButtonEventHandler(Browser_MouseDown), true);
+
             return webControl;
+        }
+
+        private static void Browser_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine("Cef Down");
         }
     }
 }

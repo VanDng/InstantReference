@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using WpfAppBar;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace InstanceReference
 {
@@ -27,21 +28,76 @@ namespace InstanceReference
         private Timer _visibilityTimer;
         private bool _SureToBeClosing;
 
+        private Storyboard _storyBoardFadeIn;
+        private Storyboard _storyBoardFadeOut;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            RegisterAnimations();
+
+            ChangeVisibility(Visibility.Hidden, false);
 
             _visibilityTimer = new Timer((s) =>
             {
                 _SureToBeClosing = true;
             }, null, Timeout.Infinite, Timeout.Infinite);
 
+            Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
-            MouseLeave += MainWindow_MouseLeave;
+            //MouseLeave += MainWindow_MouseLeave;
+            MouseDown += MainWindow_MouseDown;
+            MouseLeftButtonDown += MainWindow_MouseLeftButtonDown;
 
             IsVisibleChanged += MainWindow_IsVisibleChanged;
 
             SystemEvents.DisplaySettingsChanged += new EventHandler(SystemEvents_DisplaySettingsChanged);
+        }
+
+        private void MainWindow_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ChangeVisibility(Visibility.Hidden);
+        }
+
+        private void MainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ChangeVisibility(Visibility.Hidden);
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateWindow(Visibility);
+        }
+
+        private void RegisterAnimations()
+        {
+            Name = string.IsNullOrEmpty(Title) ? "__InstanceReferWindow__" : Title;
+            RegisterName(Name, this);
+
+            // Window fade in
+
+            var windowFadeIn = new DoubleAnimation();
+            windowFadeIn.To = 1;
+            windowFadeIn.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+
+            Storyboard.SetTargetName(windowFadeIn, Name);
+            Storyboard.SetTargetProperty(windowFadeIn, new PropertyPath(Window.OpacityProperty));
+
+            _storyBoardFadeIn = new Storyboard();
+            _storyBoardFadeIn.Children.Add(windowFadeIn);
+
+            // Window fade out
+
+            var windowFadeOut = new DoubleAnimation();
+            windowFadeOut.To = 0;
+            windowFadeOut.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+
+            Storyboard.SetTargetName(windowFadeOut, Name);
+            Storyboard.SetTargetProperty(windowFadeOut, new PropertyPath(Window.OpacityProperty));
+
+            _storyBoardFadeOut = new Storyboard();
+            _storyBoardFadeOut.Children.Add(windowFadeOut);
         }
 
         private void MainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -61,7 +117,7 @@ namespace InstanceReference
             // A monitor prevents that problem.
             if (_SureToBeClosing)
             {
-                ChangeVisibility(Visibility.Hidden);
+                //ChangeVisibility(Visibility.Hidden);
             }
         }
 
@@ -81,18 +137,30 @@ namespace InstanceReference
 
         }
 
-        public void ChangeVisibility(Visibility visibility)
+        public void ChangeVisibility(Visibility visibility, bool useAnimation = true)
         {
             // The order of callings is important.
             if (visibility == Visibility.Visible)
             {
-                UpdateWindow(visibility);
-                Visibility = visibility;
+                if (useAnimation)
+                {
+                    _storyBoardFadeIn.Begin(this);
+                }
+                else
+                {
+                    Opacity = 1;
+                }
             }
             else
             {
-                Visibility = visibility;
-                UpdateWindow(visibility);
+                if (useAnimation)
+                {
+                    _storyBoardFadeOut.Begin(this);
+                }
+                else
+                {
+                    Opacity = 0;
+                }
             }
         }
 
@@ -106,14 +174,7 @@ namespace InstanceReference
             Top = 0;
             Height = h;
 
-            if (visibility == Visibility.Hidden)
-            {
-                Left = w;
-            }
-            else
-            {
-                Left = w - Width;
-            }
+            Left = w - Width;
         }
     }
 }
