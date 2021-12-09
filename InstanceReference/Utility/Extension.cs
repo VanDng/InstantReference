@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -92,7 +93,10 @@ namespace InstanceReference
 
             if (string.IsNullOrEmpty(elementName))
             {
-                elementName = Guid.NewGuid().ToString().Replace("-","");
+                do
+                {
+                    elementName = Guid.NewGuid().ToString().Replace("-", "");
+                } while (Char.IsLetter(elementName.First()) == false);
 
                 targetElement.Name = elementName;
             }
