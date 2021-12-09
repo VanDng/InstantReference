@@ -28,14 +28,9 @@ namespace InstanceReference
         private Timer _visibilityTimer;
         private bool _SureToBeClosing;
 
-        private Storyboard _storyBoardFadeIn;
-        private Storyboard _storyBoardFadeOut;
-
         public MainWindow()
         {
             InitializeComponent();
-
-            RegisterAnimations();
 
             ChangeVisibility(Visibility.Hidden, false);
 
@@ -68,36 +63,6 @@ namespace InstanceReference
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateWindow(Visibility);
-        }
-
-        private void RegisterAnimations()
-        {
-            Name = string.IsNullOrEmpty(Title) ? "__InstanceReferWindow__" : Title;
-            RegisterName(Name, this);
-
-            // Window fade in
-
-            var windowFadeIn = new DoubleAnimation();
-            windowFadeIn.To = 1;
-            windowFadeIn.Duration = new Duration(TimeSpan.FromMilliseconds(200));
-
-            Storyboard.SetTargetName(windowFadeIn, Name);
-            Storyboard.SetTargetProperty(windowFadeIn, new PropertyPath(Window.OpacityProperty));
-
-            _storyBoardFadeIn = new Storyboard();
-            _storyBoardFadeIn.Children.Add(windowFadeIn);
-
-            // Window fade out
-
-            var windowFadeOut = new DoubleAnimation();
-            windowFadeOut.To = 0;
-            windowFadeOut.Duration = new Duration(TimeSpan.FromMilliseconds(200));
-
-            Storyboard.SetTargetName(windowFadeOut, Name);
-            Storyboard.SetTargetProperty(windowFadeOut, new PropertyPath(Window.OpacityProperty));
-
-            _storyBoardFadeOut = new Storyboard();
-            _storyBoardFadeOut.Children.Add(windowFadeOut);
         }
 
         private void MainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -144,7 +109,7 @@ namespace InstanceReference
             {
                 if (useAnimation)
                 {
-                    _storyBoardFadeIn.Begin(this);
+                    this.Animate(Window.OpacityProperty, Opacity, 1, 250);
                 }
                 else
                 {
@@ -155,7 +120,7 @@ namespace InstanceReference
             {
                 if (useAnimation)
                 {
-                    _storyBoardFadeOut.Begin(this);
+                    this.Animate(Window.OpacityProperty, Opacity, 0, 250);
                 }
                 else
                 {

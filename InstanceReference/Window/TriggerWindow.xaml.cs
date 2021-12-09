@@ -65,7 +65,8 @@ namespace InstanceReference
 
         private void TriggerWindow_MouseEnter(object sender, MouseEventArgs e)
         {
-            Opacity = _opacityFocus;
+            //Opacity = _opacityFocus;
+            this.Animate(Window.OpacityProperty, Opacity, _opacityFocus, 250);
         }
 
         public void SetStatus(TriggerStatus triggerStatus)
@@ -135,7 +136,9 @@ namespace InstanceReference
 
         private void SettingWindow_MouseLeave(object sender, MouseEventArgs e)
         {
-            Opacity = _opacityNotFocus;
+            //Opacity = _opacityNotFocus;
+            this.Animate(Window.OpacityProperty, Opacity, _opacityNotFocus, 250);
+
             stopDragging();
         }
 
