@@ -67,7 +67,11 @@ namespace InstanceReference
                 string text = string.Empty;
                 try
                 {
-                    text = Clipboard.GetText(TextDataFormat.Text);
+                    if (Clipboard.ContainsData(DataFormats.Text))
+                    {
+                        var clipboardData = Clipboard.GetDataObject();
+                        text = (string)clipboardData.GetData(DataFormats.Text);
+                    }
                 }
                 catch (Exception ex)
                 {
