@@ -264,14 +264,19 @@ namespace InstanceReference
 
         private void adjustCircleElement()
         {
+            int border = 3;
+            innerCircle.Width = outerCircle.ActualWidth - border;
+            innerCircle.Height = outerCircle.ActualHeight - border;
+
+
             /*
-             * Haha if you are good at math and have a better solution, tell me.
-             * For now, I use the try and error approach again haha
+             * Haha if you are good at math and have a better solution, please share with me.
+             * For now, I use the try and error approach haha
              */
 
             double actualDiagonal = Math.Sqrt(Math.Pow(indicator.ActualWidth, 2) + Math.Pow(indicator.ActualHeight, 2));
 
-            double expecteddiagonal = circle.ActualWidth;
+            double expecteddiagonal = innerCircle.Width;
 
             double newWidth = indicator.ActualWidth;
             double newHeight = indicator.ActualHeight;

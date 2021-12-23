@@ -16,7 +16,8 @@
         Height="50">
 
     <Grid x:Name="grid">
-        <Ellipse x:Name="circle" Fill="White" />
+        <Ellipse x:Name="outerCircle" Fill="Black" />
+        <Ellipse x:Name="innerCircle" Fill="White" />
         
         <Image gif:AnimationBehavior.SourceUri=".\Icon\ok_4.gif"
                         gif:AnimationBehavior.RepeatBehavior="Forever"
