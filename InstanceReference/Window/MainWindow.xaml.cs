@@ -42,20 +42,16 @@ namespace InstanceReference
             Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
             //MouseLeave += MainWindow_MouseLeave;
-            MouseDown += MainWindow_MouseDown;
-            MouseLeftButtonDown += MainWindow_MouseLeftButtonDown;
+            //MouseDown += MainWindow_MouseDown;
+            //MouseLeftButtonDown += MainWindow_MouseLeftButtonDown;
+            MouseRightButtonDown += MainWindow_MouseRightButtonDown;
 
             IsVisibleChanged += MainWindow_IsVisibleChanged;
 
             SystemEvents.DisplaySettingsChanged += new EventHandler(SystemEvents_DisplaySettingsChanged);
         }
 
-        private void MainWindow_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            ChangeVisibility(Visibility.Hidden);
-        }
-
-        private void MainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void MainWindow_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             ChangeVisibility(Visibility.Hidden);
         }

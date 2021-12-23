@@ -54,6 +54,16 @@ namespace InstanceReference
 
             var displayManager = new DisplayManager(window.tabContainer);
             displayManager.Initialize(sourceManager.Sources);
+            displayManager.OnMouseDown += (m) =>
+            {
+                if (m.RightButton == System.Windows.Input.MouseButtonState.Pressed)
+                {
+                    window.Dispatcher.Invoke(() =>
+                    {
+                        window.ChangeVisibility(Visibility.Hidden);
+                    });
+                }
+            };
 
             var lookupManager = new LookupManager();
             lookupManager.Intialize(sourceManager.Sources);

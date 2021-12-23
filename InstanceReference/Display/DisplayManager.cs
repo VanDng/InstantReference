@@ -16,6 +16,10 @@ namespace InstanceReference
 {
     class DisplayManager : IDisposable
     {
+        public event MouseDown OnMouseDown;
+
+        public delegate void MouseDown(MouseButtonEventArgs e);
+
         private TabControl _tabContainer;
         private Hashtable _sourceMaps;
 
@@ -111,14 +115,23 @@ namespace InstanceReference
              */
             //webControl.RequestHandler = new CustomRequestHandler();
 
-            webControl.AddHandler(UIElement.MouseDownEvent, new MouseButtonEventHandler(Browser_MouseDown), true);
+            //webControl.AddHandler(UIElement.MouseDownEvent, new MouseButtonEventHandler(Browser_MouseDown), true);
+            webControl.AddHandler(UIElement.PreviewMouseDownEvent, new MouseButtonEventHandler(Browser_PreviewMouseDown), true);
+
+            // Disable context menu
+            webControl.MenuHandler = new CustomContextMenuHandler();
 
             return webControl;
         }
 
-        private static void Browser_MouseDown(object sender, MouseButtonEventArgs e)
+        //private void Browser_MouseDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    OnMouseDown?.Invoke(e);
+        //}
+
+        private void Browser_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("Cef Down");
+            OnMouseDown?.Invoke(e);
         }
     }
 }
