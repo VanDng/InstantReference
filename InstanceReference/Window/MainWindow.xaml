@@ -8,7 +8,8 @@
         Title="MainWindow" Height="724" Width="495"
         Initialized="Window_Initialized"
         WindowStyle="None"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        ShowInTaskbar="False">
     <Grid>
         <TabControl Name="tabContainer">
             
