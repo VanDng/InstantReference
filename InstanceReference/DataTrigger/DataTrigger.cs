@@ -23,6 +23,8 @@ namespace InstanceReference
 
         public void Push(string data)
         {
+            data = data.ToLower().Trim();
+
             if (IsNeedToTrigger(data))
             {
                 OnDataArrived(data);
@@ -33,9 +35,6 @@ namespace InstanceReference
         private bool IsNeedToTrigger(string text)
         {
             bool needToTrigger = false;
-
-            text = text.ToLower()
-                       .Trim();
 
             if (text.Length > 0 &&
                 text.Length < 50 &&
